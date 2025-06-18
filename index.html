@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepWord：免费精准美观转化 AI 内容为 Word 文档</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 50%, #e0f2fe 100%);
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1.5rem 1.5rem 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            color: #4f46e5;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.875rem;
+            resize: vertical;
+            transition: all 0.2s;
+            background: #fff;
+        }
+
+        .textarea:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 0.75rem;
+            align-items: end;
+            flex-wrap: wrap;
+        }
+
+        .input-group {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            background: #fff;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .select {
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .select:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #f8fafc;
+            color: #475569;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .history-item:hover {
+            background: #f1f5f9;
+            transform: translateY(-1px);
+        }
+
+        .history-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .history-filename {
+            font-weight: 500;
+            color: #1e293b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 0.25rem;
+        }
+
+        .history-time {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .history-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-html {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-docx {
+            background: #f3e8ff;
+            color: #7c2d12;
+        }
+
+        .badge-pptx {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .preview-container {
+            border: 2px solid #e2e8f0;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .preview-iframe {
+            width: 100%;
+            height: 800px;
+            border: none;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 400px;
+            color: #64748b;
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 0.5rem;
+        }
+
+        .empty-state .icon {
+            width: 3rem;
+            height: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .space-y-6 > * + * {
+            margin-top: 1.5rem;
+        }
+
+        .space-y-3 > * + * {
+            margin-top: 0.75rem;
+        }
+
+        @media (max-width: 640px) {
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .input-group {
+                min-width: auto;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        .clear-paste-btn-header {
+            height: 70% !important;
+            font-size: 0.7em !important;
+            padding-top: 0.3em !important;
+            padding-bottom: 0.3em !important;
+            padding-left: 0.8em !important;
+            padding-right: 0.8em !important;
+            display: flex;
+            align-items: center;
+        }
+
+        .highlight {
+            display: inline-block;
+            background: #e0e7ff;
+            color: #4f46e5;
+            border-radius: 0.7em;
+            padding: 0.1em 0.6em;
+            font-weight: 700;
+            margin: 0 0.1em;
+            box-shadow: 0 1px 4px rgba(79,70,229,0.08);
+        }
+
+        .prompt-box {
+            background: #f5f6fa;
+            border-radius: 8px;
+            padding: 1.2em 1.5em;
+            margin: 1.5em 0;
+            font-size: 1em;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+            font-weight: normal;
+            color: #222;
+        }
+
+        .prompt-box h2 {
+            font-size: 1.1em;
+            font-weight: normal;
+            margin: 0 0 0.7em;
+        }
+
+        .prompt-box ol {
+            margin-left: 1.2em;
+        }
+
+        .prompt-box li {
+            margin-bottom: 0.4em;
+        }
+
+        body {
+            font-family: -apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,Hiragino Sans GB,sans-serif;
+            padding: 2em;
+            background: #fff;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 0.5em;
+            text-align: center;
+            font-weight: 800;
+            letter-spacing: 1px;
+            border-bottom: 1.5px solid #e0e7ef;
+            padding-bottom: 0.3em;
+        }
+
+        .step-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.18em;
+            font-weight: 600;
+            margin: 2em 0 0.7em;
+        }
+
+        .step-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2em;
+            height: 2em;
+            background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+            color: #fff;
+            border-radius: 50%;
+            font-size: 1em;
+            font-weight: 700;
+            margin-right: 0.7em;
+            box-shadow: 0 2px 8px #e0e7ef;
+        }
+
+        .step-content {
+            margin-bottom: 1.5em;
+        }
+
+        .prompt-box {
+            background: #f5f6fa;
+            border-radius: 14px;
+            box-shadow: 0 4px 18px rgba(102,126,234,0.10);
+            padding: 1.5em 1.7em;
+            margin: 1.5em 0 2em;
+            font-size: 1em;
+            font-family: -apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,Hiragino Sans GB,sans-serif;
+            font-weight: normal;
+            color: #222;
+        }
+
+        .prompt-box h2 {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin: 0 0 0.7em;
+        }
+
+        .prompt-box ol {
+            margin-left: 1.2em;
+        }
+
+        .prompt-box li {
+            margin-bottom: 0.4em;
+        }
+
+        a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-grid">
+            <!-- Left Column -->
+            <div class="space-y-6">
+                <!-- Main Form -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            代码输入
+                        </h2>
+                        <button id="clearPasteBtn" class="btn btn-secondary btn-sm clear-paste-btn-header" type="button" style="margin-left: 1rem;">
+                            <span class="btn-icon">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </span>
+                            <span class="btn-text">清除并粘贴</span>
+                        </button>
+                    </div>
+                    <div class="card-content">
+                        
+                        <div class="form-group">
+                            <textarea 
+                                id="htmlCode" 
+                                class="textarea" 
+                                placeholder="粘贴你的HTML代码..."
+                            ></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="input-group">
+                                <input 
+                                    type="text" 
+                                    id="filename" 
+                                    class="input" 
+                                    placeholder="文件名" 
+                                    value="myfile"
+                                >
+                            </div>
+                            <button id="previewBtn" class="btn btn-secondary btn-center" type="button">
+                                <span class="btn-text">预览</span>
+                            </button>
+                            <button id="downloadBtn" class="btn btn-primary btn-center" type="button">
+                                <span class="btn-text">下载.docx</span>
+                            </button>
+                            <button id="downloadPptBtn" class="btn btn-primary btn-center" type="button">
+                                <span class="btn-text">下载.pptx</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- History -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            历史下载
+                        </h2>
+                    </div>
+                    <div class="card-content">
+                        <div id="historyList"></div>
+                        <div id="historyPagination" class="pagination"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Preview -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                        内容预览
+                    </h2>
+                    <div style="position:absolute;top:1.5rem;right:2rem;display:flex;gap:12px;z-index:2;">
+                        <button id="copyPromptBtnPreview" class="btn btn-secondary btn-sm clear-paste-btn-header" type="button">
+                            <span class="btn-text">复制提示词</span>
+                        </button>
+                        <a id="yuanbaoBtnPreview" href="https://yuanbao.tencent.com/chat/" target="_blank" class="btn btn-secondary btn-sm clear-paste-btn-header" style="text-decoration: none; display: inline-flex; align-items: center;">
+                            <span class="btn-text">腾讯元宝</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div id="previewContainer">
+                        <div class="empty-state">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                            <p>请输入HTML代码以查看预览</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.11.0/dist/pptxgen.bundle.js"></script>
+    <script>
+        // Global variables
+        const HISTORY_KEY = 'html_downloader_history';
+        const PAGE_SIZE = 10;
+        let currentPage = 1;
+        let history = [];
+        const CODE_CACHE_KEY = 'html_downloader_code_cache';
+        let lastAutoTitle = '';
+        let filetype = 'html';
+
+        // 固定的初始提示词纯文本内容
+        const FIXED_PROMPT_TEXT = `写一个约【3000字】的【公司年会邀请函/蒙特卡洛模型在交通中的应用/悉尼大学研究生申请书/2025考研白皮书】，思考后用一个html文件输出全部内容\n\n排版要求（不一定都包含）\n1. 一级标题字体为黑体（二号），行距 28 磅值，段后空 1 行；\n2. 二级标题字体为黑体（小三号），行距 26 磅值，段后空 0.5 行；\n3. 三级标题字体为黑体（四号），行距 24 磅值，段后空 0.3 行；\n4. 正文用四号宋体，对齐方式为两端对齐，首行缩进两个字符，行距为 1.5 倍行距；\n5. 表格表头字体为黑体（小四号），表格内容为宋体（小四号），表格边框为 1 磅实线。\n6. 文字和表格都用黑色\n7. 页面白底`;
+
+        // PPT主题配色方案
+        const PPT_THEMES = {
+            professional: {
+                name: '商务专业',
+                primary: '#2563eb',
+                secondary: '#1e40af',
+                accent: '#3b82f6',
+                background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+                textPrimary: '#1e293b',
+                textSecondary: '#475569'
+            },
+            modern: {
+                name: '现代简约',
+                primary: '#7c3aed',
+                secondary: '#5b21b6',
+                accent: '#8b5cf6',
+                background: 'linear-gradient(135deg, #faf5ff 0%, #e9d5ff 100%)',
+                textPrimary: '#374151',
+                textSecondary: '#6b7280'
+            },
+            elegant: {
+                name: '优雅经典',
+                primary: '#059669',
+                secondary: '#047857',
+                accent: '#10b981',
+                background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+                textPrimary: '#1f2937',
+                textSecondary: '#4b5563'
+            }
+        };
+
+        // DOM elements
+        const htmlCodeTextarea = document.getElementById('htmlCode');
+        const filenameInput = document.getElementById('filename');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const historyList = document.getElementById('historyList');
+        const historyPagination = document.getElementById('historyPagination');
+        const previewContainer = document.getElementById('previewContainer');
+        const clearPasteBtn = document.getElementById('clearPasteBtn');
+        const previewBtn = document.getElementById('previewBtn');
+        const copyPromptBtnPreview = document.getElementById('copyPromptBtnPreview');
+        const downloadPptBtn = document.getElementById('downloadPptBtn');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadHistory();
+            renderHistory();
+            const cachedCode = localStorage.getItem(CODE_CACHE_KEY);
+            if (cachedCode && cachedCode.trim()) {
+                htmlCodeTextarea.value = cachedCode;
+            } else {
+                htmlCodeTextarea.value = `<!DOCTYPE html>\n<html lang=\"zh\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>DeepWord使用教程</title>\n  <style>body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,Hiragino Sans GB,sans-serif;padding:2em;background:#fff;}
+  h1{font-size:2.2em;margin-bottom:0.5em;text-align:center;font-weight:800;letter-spacing:1px;border-bottom:1.5px solid #e0e7ef;padding-bottom:0.3em;}
+  .step-title{display:flex;align-items:center;font-size:1.18em;font-weight:600;margin:2em 0 0.7em;}
+  .step-num{display:inline-flex;align-items:center;justify-content:center;width:2em;height:2em;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;border-radius:50%;font-size:1em;font-weight:700;margin-right:0.7em;box-shadow:0 2px 8px #e0e7ef;}
+  .step-content{margin-bottom:1.5em;}
+  .prompt-box{background:#f5f6fa;border-radius:14px;box-shadow:0 4px 18px rgba(102,126,234,0.10);padding:1.5em 1.7em;margin:1.5em 0 2em;font-size:1em;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,Hiragino Sans GB,sans-serif;font-weight:normal;color:#222;}
+  .prompt-box h2{font-size:1.1em;font-weight:600;margin:0 0 0.7em;}
+  .prompt-box ol{margin-left:1.2em;}
+  .prompt-box li{margin-bottom:0.4em;}
+  a{color:#667eea;text-decoration:none;}
+  a:hover{text-decoration:underline;}
+  </style>\n</head>\n<body>\n  <h1>使用教程</h1>\n  <div class=\"step-title\"><span class=\"step-num\">1</span>将【提示词】发给 -&gt; <a href=\"https://yuanbao.tencent.com/chat/\" target=\"_blank\">腾讯元宝</a></div>\n  <div class=\"step-content\">
+    <div class=\"prompt-box\">
+      <p>写一个约【3000字】的【公司年会邀请函/蒙特卡洛模型在交通中的应用/悉尼大学研究生申请书/2025考研白皮书】，思考后用一个html文件输出全部内容</p>
+      <h2>排版要求（不一定都包含）</h2>
+      <ol>
+        <li>一级标题字体为黑体（二号），行距 28 磅值，段后空 1 行；</li>
+        <li>二级标题字体为黑体（小三号），行距 26 磅值，段后空 0.5 行；</li>
+        <li>三级标题字体为黑体（四号），行距 24 磅值，段后空 0.3 行；</li>
+        <li>正文用四号宋体，对齐方式为两端对齐，首行缩进两个字符，行距为 1.5 倍行距；</li>
+        <li>表格表头字体为黑体（小四号），表格内容为宋体（小四号），表格边框为 1 磅实线。</li>
+        <li>文字和表格都用黑色</li>
+        <li>页面白底</li>
+      </ol>
+    </div>
+  </div>
+  <div class=\"step-title\"><span class=\"step-num\">2</span>复制AI生成的【HTML代码】，粘贴到页面左侧</div>
+  <div class=\"step-content\"></div>
+  <div class=\"step-title\"><span class=\"step-num\">3</span>选择【文件类型】点击下载</div>
+  <div class=\"step-content\"></div>
+</body>\n</html>`;
+            }
+            lastAutoTitle = '';
+            autoFillTitleIfNeeded();
+            updatePreview();
+            updateDownloadButton();
+
+            // 复制提示词按钮功能
+            setTimeout(function() {
+                var copyBtn = document.getElementById('copyPromptBtn');
+                if (copyBtn) {
+                    copyBtn.onclick = function() {
+                        var promptBox = copyBtn.parentElement;
+                        // 只复制prompt-box内除按钮外的纯文本
+                        var btnDisplay = copyBtn.style.display;
+                        copyBtn.style.display = 'none';
+                        var text = promptBox.innerText.trim();
+                        copyBtn.style.display = btnDisplay;
+                        navigator.clipboard.writeText(text).then(function() {
+                            copyBtn.textContent = '已复制！';
+                            copyBtn.style.background = '#a8e6cf';
+                            copyBtn.style.color = '#222';
+                            setTimeout(function(){
+                                copyBtn.textContent='复制提示词';
+                                copyBtn.style.background = '#e0e7ef';
+                                copyBtn.style.color = '#333';
+                            }, 1500);
+                        }, function() {
+                            copyBtn.textContent = '复制失败';
+                            copyBtn.style.background = '#fbb';
+                            copyBtn.style.color = '#222';
+                            setTimeout(function(){
+                                copyBtn.textContent='复制提示词';
+                                copyBtn.style.background = '#e0e7ef';
+                                copyBtn.style.color = '#333';
+                            }, 1500);
+                        });
+                    };
+                }
+            }, 300);
+        });
+
+        // Event listeners
+        function autoFillTitleIfNeeded(force = false) {
+            const code = htmlCodeTextarea.value;
+            const titleMatch = code.match(/<title>([^<]*)<\/title>/i);
+            if (titleMatch && titleMatch[1].trim()) {
+                const title = titleMatch[1].trim().replace(/\.html?$/i, '');
+                // force时无条件覆盖，否则只在默认值或上次自动识别时覆盖
+                if (force || filenameInput.value === 'myfile' || filenameInput.value === lastAutoTitle) {
+                    filenameInput.value = title;
+                    lastAutoTitle = title;
+                }
+            }
+        }
+
+        htmlCodeTextarea.addEventListener('input', function() {
+            localStorage.setItem(CODE_CACHE_KEY, htmlCodeTextarea.value);
+            autoFillTitleIfNeeded(true); // 粘贴和输入都强制自动识别标题
+            updatePreview();
+            updateDownloadButton();
+        });
+
+        downloadBtn.addEventListener('click', function() {
+            filetype = 'docx';
+            downloadFile();
+        });
+        previewBtn.addEventListener('click', function() {
+            filetype = 'html';
+            updatePreview();
+        });
+        clearPasteBtn.addEventListener('click', async function() {
+            htmlCodeTextarea.value = '';
+            localStorage.setItem(CODE_CACHE_KEY, '');
+            try {
+                const text = await navigator.clipboard.readText();
+                htmlCodeTextarea.value = text;
+                localStorage.setItem(CODE_CACHE_KEY, text);
+                autoFillTitleIfNeeded(true); // 粘贴后自动识别标题
+                updatePreview();
+                updateDownloadButton();
+            } catch (err) {
+                alert('无法读取剪贴板内容，请确保已授权浏览器访问剪贴板。');
+            }
+        });
+
+        if (copyPromptBtnPreview) {
+            copyPromptBtnPreview.onclick = function() {
+                // 始终复制固定的初始提示词内容
+                navigator.clipboard.writeText(FIXED_PROMPT_TEXT).then(function() {
+                    copyPromptBtnPreview.textContent = '已复制！';
+                    copyPromptBtnPreview.style.background = '#a8e6cf';
+                    setTimeout(function(){
+                        copyPromptBtnPreview.textContent = '复制提示词';
+                        copyPromptBtnPreview.style.background = '';
+                    }, 1500);
+                }, function() {
+                    copyPromptBtnPreview.textContent = '复制失败';
+                    copyPromptBtnPreview.style.background = '#fbb';
+                    setTimeout(function(){
+                        copyPromptBtnPreview.textContent = '复制提示词';
+                        copyPromptBtnPreview.style.background = '';
+                    }, 1500);
+                });
+            };
+        }
+
+        if (downloadPptBtn) {
+            downloadPptBtn.onclick = async function() {
+                const code = htmlCodeTextarea.value.trim();
+                if (!code) return;
+                let title = filenameInput.value.trim() || 'myfile';
+                if (!title.endsWith('.pptx')) title += '.pptx';
+                downloadPptBtn.disabled = true;
+                const oldText = downloadPptBtn.innerHTML;
+                downloadPptBtn.innerHTML = '<span class="btn-text">正在生成...</span>';
+                
+                try {
+                    await generateOptimizedPPT(code, title);
+                    
+                    // 保存到历史记录
+                    saveHistory({
+                        filename: title,
+                        time: Date.now(),
+                        code: code,
+                        type: 'pptx'
+                    });
+                } catch (error) {
+                    console.error('PPT生成失败:', error);
+                    alert('PPT生成失败，请检查HTML代码格式');
+                } finally {
+                    downloadPptBtn.disabled = false;
+                    downloadPptBtn.innerHTML = oldText;
+                }
+            };
+        }
+
+        // 优化的PPT生成函数
+        async function generateOptimizedPPT(code, filename) {
+            // 解析HTML
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = code;
+            
+            // 创建PPT实例
+            const pptx = new PptxGenJS();
+            
+            // 选择主题（可以根据内容智能选择，这里使用专业主题）
+            const theme = PPT_THEMES.professional;
+            
+            // 设置PPT基本属性
+            pptx.author = 'DeepWord';
+            pptx.company = 'DeepWord';
+            pptx.subject = filename.replace('.pptx', '');
+            pptx.title = filename.replace('.pptx', '');
+            
+            // 默认字体设置
+            const defaultFont = 'Microsoft YaHei';
+            const titleFont = 'Microsoft YaHei';
+            
+            // 1. 生成封面页
+            await createCoverSlide(pptx, tempDiv, theme, titleFont);
+            
+            // 2. 生成目录页（如果有多个章节）
+            const sections = getSections(tempDiv);
+            if (sections.length > 1) {
+                createTableOfContentsSlide(pptx, sections, theme, defaultFont);
+            }
+            
+            // 3. 生成内容页
+            await createContentSlides(pptx, tempDiv, theme, defaultFont);
+            
+            // 4. 生成结束页
+            createEndSlide(pptx, theme, titleFont);
+            
+            // 下载PPT
+            await pptx.writeFile({ fileName: filename });
+        }
+
+        // 创建封面页
+        async function createCoverSlide(pptx, tempDiv, theme, font) {
+            const slide = pptx.addSlide();
+            slide.background = { fill: 'FFFFFF' };
+            const h1 = tempDiv.querySelector('h1');
+            const mainTitle = h1 ? h1.textContent.trim() : '演示文稿';
+            slide.addText(mainTitle, {
+                x: 0.5,
+                y: 2.5,
+                w: 9,
+                h: 1.5,
+                fontSize: 44,
+                bold: true,
+                color: '#000000',
+                align: 'center',
+                fontFace: font
+            });
+            const currentDate = new Date().toLocaleDateString('zh-CN');
+            slide.addText(`生成日期：${currentDate}`, {
+                x: 0.5,
+                y: 4.2,
+                w: 9,
+                h: 0.8,
+                fontSize: 18,
+                color: '#000000',
+                align: 'center',
+                fontFace: font
+            });
+        }
+
+        // 获取章节信息
+        function getSections(tempDiv) {
+            const sections = [];
+            const headings = tempDiv.querySelectorAll('h2, h3');
+            
+            headings.forEach(heading => {
+                sections.push({
+                    title: heading.textContent.trim(),
+                    level: parseInt(heading.tagName.charAt(1))
+                });
+            });
+            
+            return sections;
+        }
+
+        // 创建目录页
+        function createTableOfContentsSlide(pptx, sections, theme, font) {
+            const maxY = 6.5;
+            const lineHeight = 0.9;
+            let slide = pptx.addSlide();
+            slide.background = { fill: 'FFFFFF' };
+            slide.addText('目录', {
+                x: 0.5,
+                y: 0.8,
+                w: 9,
+                h: 1,
+                fontSize: 36,
+                bold: true,
+                color: '#000000',
+                align: 'center',
+                fontFace: font
+            });
+            let yPos = 2;
+            sections.filter(section => section.level === 1 || section.level === 2).forEach(section => {
+                if (yPos + lineHeight > maxY) {
+                    slide = pptx.addSlide();
+                    slide.background = { fill: 'FFFFFF' };
+                    slide.addText('目录', {
+                        x: 0.5,
+                        y: 0.8,
+                        w: 9,
+                        h: 1,
+                        fontSize: 36,
+                        bold: true,
+                        color: '#000000',
+                        align: 'center',
+                        fontFace: font
+                    });
+                    yPos = 2;
+                }
+                slide.addText(section.title, {
+                    x: 0.7,
+                    y: yPos,
+                    w: 8.5,
+                    h: 0.7,
+                    fontSize: 22,
+                    color: '#000000',
+                    fontFace: font,
+                    bold: true
+                });
+                yPos += lineHeight;
+            });
+        }
+
+        // 创建内容页
+        async function createContentSlides(pptx, tempDiv, theme, font) {
+            const nodes = collectContentNodes(tempDiv);
+            let currentSlide = null;
+            let yPos = 0;
+            const maxY = 6.5;
+            const marginX = 0.7;
+            let slideTitle = '';
+            function repeatSectionTitle(slide, title) {
+                if (title) {
+                    slide.addText(title, {
+                        x: marginX,
+                        y: 0.8,
+                        w: 9 - marginX,
+                        h: 0.8,
+                        fontSize: 24,
+                        bold: true,
+                        color: '#000000',
+                        fontFace: font
+                    });
+                    return 1.0;
+                }
+                return 0.0;
+            }
+            for (const node of nodes) {
+                if (node.tagName === 'H1') {
+                    currentSlide = pptx.addSlide();
+                    currentSlide.background = { fill: 'FFFFFF' };
+                    slideTitle = node.textContent.trim();
+                    yPos = 0.8;
+                    currentSlide.addText(slideTitle, {
+                        x: 0.5,
+                        y: yPos,
+                        w: 9,
+                        h: 1.2,
+                        fontSize: 32,
+                        bold: true,
+                        color: '#000000',
+                        align: 'center',
+                        fontFace: font
+                    });
+                    yPos += 1.5;
+                } else if (node.tagName === 'H2' || node.tagName === 'H3') {
+                    if (!currentSlide || yPos > maxY - 1.5) {
+                        currentSlide = pptx.addSlide();
+                        currentSlide.background = { fill: 'FFFFFF' };
+                        yPos = 0.8;
+                        yPos += repeatSectionTitle(currentSlide, slideTitle);
+                    }
+                    slideTitle = node.textContent.trim();
+                    const fontSize = node.tagName === 'H2' ? 28 : 24;
+                    currentSlide.addText(slideTitle, {
+                        x: marginX,
+                        y: yPos,
+                        w: 9 - marginX,
+                        h: 1,
+                        fontSize: fontSize,
+                        bold: true,
+                        color: '#000000',
+                        fontFace: font
+                    });
+                    yPos += 1.2;
+                } else if (node.tagName === 'P') {
+                    if (!currentSlide) {
+                        currentSlide = pptx.addSlide();
+                        currentSlide.background = { fill: 'FFFFFF' };
+                        yPos = 0.8;
+                        yPos += repeatSectionTitle(currentSlide, slideTitle);
+                    }
+                    const text = node.textContent.trim();
+                    if (text) {
+                        let textLeft = text;
+                        while (textLeft.length > 0) {
+                            const textHeight = Math.max(0.8, Math.ceil(textLeft.length / 100) * 0.4) * 1.3;
+                            if (yPos + textHeight > maxY) {
+                                currentSlide = pptx.addSlide();
+                                currentSlide.background = { fill: 'FFFFFF' };
+                                yPos = 0.8;
+                                yPos += repeatSectionTitle(currentSlide, slideTitle);
+                            }
+                            // 估算本页可容纳的字符数
+                            const maxChars = Math.floor((maxY - yPos) / (1.3 * 0.4) * 100);
+                            const thisPageText = textLeft.slice(0, maxChars);
+                            currentSlide.addText(thisPageText, {
+                                x: marginX,
+                                y: yPos,
+                                w: 9 - marginX,
+                                h: textHeight,
+                                fontSize: 16,
+                                color: '#000000',
+                                fontFace: font,
+                                align: 'left',
+                                valign: 'top',
+                                lineSpacing: 24
+                            });
+                            yPos += textHeight + 0.3;
+                            textLeft = textLeft.slice(maxChars);
+                            if (textLeft.length > 0) {
+                                currentSlide = pptx.addSlide();
+                                currentSlide.background = { fill: 'FFFFFF' };
+                                yPos = 0.8;
+                                yPos += repeatSectionTitle(currentSlide, slideTitle);
+                            }
+                        }
+                    }
+                } else if (node.tagName === 'UL' || node.tagName === 'OL') {
+                    if (!currentSlide) {
+                        currentSlide = pptx.addSlide();
+                        currentSlide.background = { fill: 'FFFFFF' };
+                        yPos = 0.8;
+                        yPos += repeatSectionTitle(currentSlide, slideTitle);
+                    }
+                    const items = Array.from(node.querySelectorAll('li'));
+                    const listHeight = items.length * 0.5 * 1.3 + 0.5;
+                    if (yPos + listHeight > maxY) {
+                        currentSlide = pptx.addSlide();
+                        currentSlide.background = { fill: 'FFFFFF' };
+                        yPos = 0.8;
+                        yPos += repeatSectionTitle(currentSlide, slideTitle);
+                    }
+                    const listText = items.map((item, index) => {
+                        const prefix = node.tagName === 'OL' ? `${index + 1}. ` : '• ';
+                        return prefix + item.textContent.trim();
+                    }).join('\n');
+                    currentSlide.addText(listText, {
+                        x: marginX + 0.3,
+                        y: yPos,
+                        w: 9 - marginX - 0.3,
+                        h: listHeight,
+                        fontSize: 16,
+                        color: '#000000',
+                        fontFace: font,
+                        align: 'left',
+                        lineSpacing: 24
+                    });
+                    yPos += listHeight + 0.3;
+                } else if (node.tagName === 'TABLE') {
+                    if (!currentSlide) {
+                        currentSlide = pptx.addSlide();
+                        currentSlide.background = { fill: 'FFFFFF' };
+                        yPos = 0.8;
+                        yPos += repeatSectionTitle(currentSlide, slideTitle);
+                    }
+                    const rows = Array.from(node.rows);
+                    const tableHeight = rows.length * 0.5 * 1.3 + 1;
+                    if (yPos + tableHeight > maxY) {
+                        currentSlide = pptx.addSlide();
+                        currentSlide.background = { fill: 'FFFFFF' };
+                        yPos = 0.8;
+                        yPos += repeatSectionTitle(currentSlide, slideTitle);
+                    }
+                    const tableData = rows.map((row, rowIndex) => {
+                        return Array.from(row.cells).map(cell => ({
+                            text: cell.textContent.trim(),
+                            options: {
+                                fontSize: 14,
+                                fontFace: font,
+                                color: '#000000',
+                                fill: '#FFFFFF',
+                                bold: rowIndex === 0,
+                                align: 'center',
+                                lineSpacing: 21
+                            }
+                        }));
+                    });
+                    currentSlide.addTable(tableData, {
+                        x: marginX,
+                        y: yPos,
+                        w: 9 - marginX,
+                        border: { pt: 1, color: '#000000' },
+                        fontSize: 14,
+                        fontFace: font
+                    });
+                    yPos += tableHeight + 0.3;
+                }
+            }
+        }
+
+        // 创建结束页
+        function createEndSlide(pptx, theme, font) {
+            const slide = pptx.addSlide();
+            slide.background = { fill: 'FFFFFF' };
+            slide.addText('谢谢观看', {
+                x: 0.5,
+                y: 2.5,
+                w: 9,
+                h: 1.5,
+                fontSize: 40,
+                bold: true,
+                color: '#000000',
+                align: 'center',
+                fontFace: font
+            });
+            slide.addText('Thank You', {
+                x: 0.5,
+                y: 4,
+                w: 9,
+                h: 1,
+                fontSize: 24,
+                color: '#000000',
+                align: 'center',
+                fontFace: font,
+                italic: true
+            });
+        }
+
+        // 收集内容节点
+        function collectContentNodes(root) {
+            const result = [];
+            const walker = document.createTreeWalker(
+                root,
+                NodeFilter.SHOW_ELEMENT,
+                {
+                    acceptNode: function(node) {
+                        if (['H1', 'H2', 'H3', 'P', 'UL', 'OL', 'TABLE'].includes(node.tagName)) {
+                            return NodeFilter.FILTER_ACCEPT;
+                        }
+                        return NodeFilter.FILTER_SKIP;
+                    }
+                }
+            );
+            
+            let node;
+            while (node = walker.nextNode()) {
+                // 跳过空内容
+                if (node.textContent.trim()) {
+                    result.push(node);
+                }
+            }
+            
+            return result;
+        }
+
+        // Functions
+        function loadHistory() {
+            try {
+                const saved = localStorage.getItem(HISTORY_KEY);
+                if (saved) {
+                    history = JSON.parse(saved);
+                }
+            } catch (error) {
+                console.error('Failed to load history:', error);
+                history = [];
+            }
+        }
+
+        function saveHistory(item) {
+            history.unshift(item);
+            if (history.length > 200) {
+                history = history.slice(0, 200);
+            }
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+            renderHistory();
+        }
+
+        function updateDownloadButton() {
+            const hasCode = htmlCodeTextarea.value.trim().length > 0;
+            // 如果文件名为"使用教程"，禁用下载按钮并提示
+            if (filenameInput.value.trim() === '使用教程') {
+                downloadBtn.disabled = true;
+                downloadBtn.title = '该文件不支持下载';
+            } else {
+                downloadBtn.disabled = !hasCode;
+                downloadBtn.title = '';
+            }
+        }
+
+        function updatePreview() {
+            const code = htmlCodeTextarea.value;
+            if (code.trim()) {
+                previewContainer.innerHTML = `
+                    <div class="preview-container">
+                        <iframe class="preview-iframe" srcdoc="${code.replace(/"/g, '&quot;')}" title="HTML Preview"></iframe>
+                    </div>
+                `;
+            } else {
+                previewContainer.innerHTML = `
+                    <div class="empty-state">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                        <p>请输入HTML代码以查看预览</p>
+                    </div>
+                `;
+            }
+            // 绑定复制提示词按钮事件（如果存在）
+            setTimeout(function() {
+                var copyBtn = document.getElementById('copyPromptBtn');
+                if (copyBtn) {
+                    copyBtn.onclick = function() {
+                        var promptBox = copyBtn.parentElement;
+                        var btnDisplay = copyBtn.style.display;
+                        copyBtn.style.display = 'none';
+                        var text = promptBox.innerText.trim();
+                        copyBtn.style.display = btnDisplay;
+                        navigator.clipboard.writeText(text).then(function() {
+                            copyBtn.textContent = '已复制！';
+                            copyBtn.style.background = '#a8e6cf';
+                            copyBtn.style.color = '#222';
+                            setTimeout(function(){
+                                copyBtn.textContent='复制提示词';
+                                copyBtn.style.background = '#e0e7ef';
+                                copyBtn.style.color = '#333';
+                            }, 1500);
+                        }, function() {
+                            copyBtn.textContent = '复制失败';
+                            copyBtn.style.background = '#fbb';
+                            copyBtn.style.color = '#222';
+                            setTimeout(function(){
+                                copyBtn.textContent='复制提示词';
+                                copyBtn.style.background = '#e0e7ef';
+                                copyBtn.style.color = '#333';
+                            }, 1500);
+                        });
+                    };
+                }
+            }, 300);
+        }
+
+        async function downloadFile() {
+            const code = htmlCodeTextarea.value.trim();
+            if (!code) return;
+
+            const filename = filenameInput.value.trim() || 'myfile';
+            const type = filetype;
+
+            if (type === 'html') {
+                const fname = filename.endsWith('.html') ? filename : `${filename}.html`;
+                const blob = new Blob([code], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fname;
+                a.click();
+                URL.revokeObjectURL(url);
+
+                saveHistory({
+                    filename: fname,
+                    time: Date.now(),
+                    code: code,
+                    type: 'html'
+                });
+            } else {
+                const fname = filename.replace(/\.html?$/i, '') + '.docx';
+                await downloadWordFile(code, fname);
+                saveHistory({
+                    filename: fname,
+                    time: Date.now(),
+                    code: code,
+                    type: 'docx'
+                });
+            }
+        }
+
+        async function downloadWordFile(code, filename) {
+            try {
+                let bodyContent = code;
+                const match = code.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+                if (match) bodyContent = match[1];
+
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = bodyContent;
+                tempDiv.querySelectorAll('script, style, pre, code').forEach(el => el.remove());
+
+                // 定义自定义样式
+                const styles = {
+                    paragraphStyles: [
+                        {
+                            id: 'Heading1Custom',
+                            name: '一级标题',
+                            basedOn: 'Normal',
+                            next: 'Normal',
+                            quickFormat: true,
+                            run: {
+                                font: 'SimHei', // 黑体
+                                size: 42, // 二号=22pt=44 half-points
+                                bold: true,
+                            },
+                            paragraph: {
+                                spacing: { after: 560, line: 396, lineRule: 'atLeast' }, // 段后1行(20*28=560)，行距28磅(28*14.1=396)
+                                alignment: 'center',
+                            },
+                        },
+                        {
+                            id: 'Heading2Custom',
+                            name: '二级标题',
+                            basedOn: 'Normal',
+                            next: 'Normal',
+                            quickFormat: true,
+                            run: {
+                                font: 'SimHei',
+                                size: 36, // 小三号=18pt=36 half-points
+                                bold: true,
+                            },
+                            paragraph: {
+                                spacing: { after: 280, line: 364, lineRule: 'atLeast' }, // 段后0.5行(20*14=280)，行距26磅(26*14=364)
+                                alignment: 'center',
+                            },
+                        },
+                        {
+                            id: 'Heading3Custom',
+                            name: '三级标题',
+                            basedOn: 'Normal',
+                            next: 'Normal',
+                            quickFormat: true,
+                            run: {
+                                font: 'SimHei',
+                                size: 28, // 四号=14pt=28 half-points
+                                bold: true,
+                            },
+                            paragraph: {
+                                spacing: { after: 168, line: 336, lineRule: 'atLeast' }, // 段后0.3行(20*8.4=168)，行距24磅(24*14=336)
+                                alignment: 'center',
+                            },
+                        },
+                        {
+                            id: 'NormalCustom',
+                            name: '正文',
+                            basedOn: 'Normal',
+                            next: 'Normal',
+                            quickFormat: true,
+                            run: {
+                                font: 'SimSun', // 宋体
+                                size: 28, // 四号=14pt=28 half-points
+                            },
+                            paragraph: {
+                                indent: { firstLine: 2 * 28 }, // 首行缩进2字符（2*14pt=28 half-points*2）
+                                alignment: 'both',
+                                spacing: { line: 420, lineRule: 'auto' }, // 1.5倍行距(14pt*1.5=21pt=420 half-points)
+                            },
+                        },
+                    ],
+                    tableStyles: [
+                        {
+                            id: 'TableCustom',
+                            name: '自定义表格',
+                            basedOn: 'NormalTable',
+                            borders: {
+                                top: { style: 'single', size: 16, color: '000000' },
+                                bottom: { style: 'single', size: 16, color: '000000' },
+                                left: { style: 'single', size: 16, color: '000000' },
+                                right: { style: 'single', size: 16, color: '000000' },
+                                insideH: { style: 'single', size: 16, color: '000000' },
+                                insideV: { style: 'single', size: 16, color: '000000' },
+                            },
+                        },
+                    ],
+                };
+
+                function getAlign(node) {
+                    // 保持原html中的居左/居中/居右
+                    let align = undefined;
+                    if (node.align) {
+                        if (node.align === 'center') align = window.docx.AlignmentType.CENTER;
+                        if (node.align === 'right') align = window.docx.AlignmentType.RIGHT;
+                        if (node.align === 'left') align = window.docx.AlignmentType.LEFT;
+                    } else if (node.style && node.style.textAlign) {
+                        if (node.style.textAlign === 'center') align = window.docx.AlignmentType.CENTER;
+                        if (node.style.textAlign === 'right') align = window.docx.AlignmentType.RIGHT;
+                        if (node.style.textAlign === 'left') align = window.docx.AlignmentType.LEFT;
+                    } else if (node.tagName === 'CENTER') {
+                        align = window.docx.AlignmentType.CENTER;
+                    }
+                    return align;
+                }
+
+                function parseNode(node) {
+                    if (node.nodeType === 3) {
+                        const text = node.textContent.replace(/\s+/g, ' ').trim();
+                        return text ? [new window.docx.Paragraph({ text, style: 'NormalCustom' })] : [];
+                    }
+                    if (node.nodeType !== 1) return [];
+                    const tag = node.tagName;
+                    if (tag === 'BUTTON') {
+                        return []; // 跳过button及其内容
+                    }
+                    const align = getAlign(node);
+                    if (tag === 'H1') {
+                        return [
+                            new window.docx.Paragraph({ text: '', style: 'NormalCustom' }), // 标题前加空行
+                            new window.docx.Paragraph({
+                                text: node.textContent.trim(),
+                                style: 'Heading1Custom',
+                                alignment: align || window.docx.AlignmentType.LEFT,
+                            })
+                        ];
+                    }
+                    if (tag === 'H2') {
+                        return [
+                            new window.docx.Paragraph({ text: '', style: 'NormalCustom' }), // 标题前加空行
+                            new window.docx.Paragraph({
+                                text: node.textContent.trim(),
+                                style: 'Heading2Custom',
+                                alignment: align || window.docx.AlignmentType.LEFT,
+                            })
+                        ];
+                    }
+                    if (tag === 'H3') {
+                        return [new window.docx.Paragraph({
+                            text: node.textContent.trim(),
+                            style: 'Heading3Custom',
+                            alignment: align || window.docx.AlignmentType.LEFT,
+                        })];
+                    }
+                    if (tag === 'P') {
+                        return [new window.docx.Paragraph({
+                            text: node.textContent.trim(),
+                            style: 'NormalCustom',
+                            alignment: align || window.docx.AlignmentType.BOTH,
+                        })];
+                    }
+                    if (tag === 'TABLE') {
+                        const rows = Array.from(node.rows);
+                        const tableData = rows.map(row => 
+                            new window.docx.TableRow({
+                                children: Array.from(row.cells).map(cell => 
+                                    new window.docx.TableCell({
+                                        children: [new window.docx.Paragraph({
+                                            text: cell.textContent.trim(),
+                                            style: 'NormalCustom'
+                                        })],
+                                        borders: {
+                                            top: { style: window.docx.BorderStyle.SINGLE, size: 1, color: "000000" },
+                                            bottom: { style: window.docx.BorderStyle.SINGLE, size: 1, color: "000000" },
+                                            left: { style: window.docx.BorderStyle.SINGLE, size: 1, color: "000000" },
+                                            right: { style: window.docx.BorderStyle.SINGLE, size: 1, color: "000000" }
+                                        }
+                                    })
+                                )
+                            })
+                        );
+                        
+                        return [new window.docx.Table({
+                            rows: tableData,
+                            width: { size: 100, type: window.docx.WidthType.PERCENTAGE }
+                        })];
+                    }
+                    // 递归处理子节点
+                    return Array.from(node.childNodes).flatMap(parseNode);
+                }
+
+                let children = Array.from(tempDiv.childNodes).flatMap(parseNode);
+                if (children.length === 0) {
+                    children = [new window.docx.Paragraph({ text: tempDiv.textContent, style: 'NormalCustom' })];
+                }
+
+                const doc = new window.docx.Document({
+                    styles,
+                    sections: [{
+                        children,
+                    }],
+                });
+
+                const blob = await window.docx.Packer.toBlob(doc);
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.click();
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error('Word file generation failed:', error);
+                alert('Word文件生成失败，请检查HTML代码格式');
+            }
+        }
+
+        function renderHistory() {
+            if (history.length === 0) {
+                historyList.innerHTML = `
+                    <div class="empty-state" style="height: 200px;">
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <p>暂无历史记录</p> 
+                    </div>
+                `;
+                historyPagination.innerHTML = '';
+                return;
+            }
+
+            const totalPages = Math.ceil(history.length / PAGE_SIZE);
+            currentPage = Math.max(1, Math.min(currentPage, totalPages));
+            const start = (currentPage - 1) * PAGE_SIZE;
+            const end = start + PAGE_SIZE;
+            const pageData = history.slice(start, end);
+
+            historyList.innerHTML = pageData.map((item, index) => `
+                <div class="history-item">
+                    <div class="history-info">
+                        <div class="history-filename" title="${item.filename}">${item.filename}</div>
+                        <div class="history-time">${new Date(item.time).toLocaleString()}</div>
+                    </div>
+                    <div class="history-actions">
+                        <span class="badge ${item.type === 'html' ? 'badge-html' : item.type === 'docx' ? 'badge-docx' : 'badge-pptx'}">
+                            ${item.type === 'html' ? 'HTML' : item.type === 'docx' ? 'Word' : 'PPT'}
+                        </span>
+                        <button class="btn btn-secondary btn-sm" onclick="downloadHistoryFile(${start + index})">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Render pagination
+            if (totalPages > 1) {
+                historyPagination.innerHTML = `
+                    <button class="btn btn-secondary btn-sm" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                    <span>第 ${currentPage} / ${totalPages} 页</span>
+                    <button class="btn btn-secondary btn-sm" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
+                `;
+            } else {
+                historyPagination.innerHTML = '';
+            }
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            renderHistory();
+        }
+
+        async function downloadHistoryFile(index) {
+            const item = history[index];
+            if (!item) return;
+
+            if (item.type === 'html') {
+                const blob = new Blob([item.code], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = item.filename;
+                a.click();
+                URL.revokeObjectURL(url);
+            } else if (item.type === 'docx') {
+                await downloadWordFile(item.code, item.filename);
+            } else if (item.type === 'pptx') {
+                await generateOptimizedPPT(item.code, item.filename);
+            }
+        }
+
+        // 递归收集所有后代节点
+        function collectNodes(root, tags) {
+            let result = [];
+            function walk(node) {
+                if (tags.includes(node.tagName)) result.push(node);
+                for (let child of node.children || []) walk(child);
+            }
+            walk(root);
+            return result;
+        }
+    </script>
+</body>
+</html>
